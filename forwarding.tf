@@ -47,14 +47,9 @@ resource "twilio_serverless_build" "forwarding" {
     sid = twilio_serverless_function.voice.latest_version_sid
   }
 
-  # TODO: prune dependencies
   dependencies = {
-    "twilio"                  = "3.6.3"
-    "fs"                      = "0.0.1-security"
-    "lodash"                  = "4.17.11"
-    "util"                    = "0.11.0"
-    "xmldom"                  = "0.1.27"
-    "@twilio/runtime-handler" = "1.0.1"
+    "twilio"                  = "3.83.1"
+    "@twilio/runtime-handler" = "1.2.5"
   }
 
   polling {
@@ -113,7 +108,7 @@ EOF
 }
 
 resource "twilio_serverless_services_environments_variables_v1" "destination" {
-  provider = twilionew
+  provider        = twilionew
   service_sid     = twilio_serverless_services_v1.forwarding.sid
   environment_sid = twilio_serverless_environment.forwarding.sid
   key             = "DESTINATION"
