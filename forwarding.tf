@@ -12,19 +12,20 @@ resource "twilio_phone_number" "phone_number" {
   }
 }
 
-resource "twilio_serverless_service" "forwarding" {
+resource "twilio_serverless_services_v1" "forwarding" {
+  provider      = twilionew
   unique_name   = "forwarding"
   friendly_name = "forwarding"
   ui_editable   = false
 }
 
 resource "twilio_serverless_environment" "forwarding" {
-  unique_name = "stupid-foo-name"
-  service_sid = twilio_serverless_service.forwarding.sid
+  unique_name = "forwarding-todo-replace-this-with-unique-1121"
+  service_sid = twilio_serverless_services_v1.forwarding.sid
 }
 
 resource "twilio_serverless_deployment" "forwarding" {
-  service_sid     = twilio_serverless_service.forwarding.sid
+  service_sid     = twilio_serverless_services_v1.forwarding.sid
   environment_sid = twilio_serverless_environment.forwarding.sid
   build_sid       = twilio_serverless_build.forwarding.sid
 
@@ -32,9 +33,11 @@ resource "twilio_serverless_deployment" "forwarding" {
     create_before_destroy = true
   }
 }
+
 resource "twilio_serverless_build" "forwarding" {
-  service_sid = twilio_serverless_service.forwarding.sid
-  runtime     = "node12"
+  provider    = twilio
+  service_sid = twilio_serverless_services_v1.forwarding.sid
+  runtime     = "node14"
 
   function_version {
     sid = twilio_serverless_function.sms.latest_version_sid
@@ -64,7 +67,7 @@ resource "twilio_serverless_build" "forwarding" {
 }
 
 resource "twilio_serverless_function" "sms" {
-  service_sid   = twilio_serverless_service.forwarding.sid
+  service_sid   = twilio_serverless_services_v1.forwarding.sid
   friendly_name = "smsForwarding"
 
   # https://www.twilio.com/blog/sms-forwarding-and-responding-using-twilio-and-javascript
@@ -93,7 +96,7 @@ EOF
 }
 
 resource "twilio_serverless_function" "voice" {
-  service_sid   = twilio_serverless_service.forwarding.sid
+  service_sid   = twilio_serverless_services_v1.forwarding.sid
   friendly_name = "callForwarding"
 
   content           = <<EOF
@@ -109,8 +112,9 @@ EOF
   visibility        = "protected"
 }
 
-resource "twilio_serverless_variable" "destination" {
-  service_sid     = twilio_serverless_service.forwarding.sid
+resource "twilio_serverless_services_environments_variables_v1" "destination" {
+  provider = twilionew
+  service_sid     = twilio_serverless_services_v1.forwarding.sid
   environment_sid = twilio_serverless_environment.forwarding.sid
   key             = "DESTINATION"
   value           = var.forward_to
