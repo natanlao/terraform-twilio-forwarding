@@ -1,14 +1,16 @@
 # TODO: cite twilio examples
-data "twilio_account_details" "account_details" {}
+# TODO: add tests
 
-resource "twilio_phone_number" "phone_number" {
-  account_sid   = data.twilio_account_details.account_details.sid
-  friendly_name = "test"
-  area_code     = var.area_code
-
-  messaging {
-    url    = "https://${twilio_serverless_environment.forwarding.domain_name}${twilio_serverless_function.sms.path}"
-    method = "POST"
+terraform {
+  required_providers {
+    twilio = {
+      source  = "RJPearson94/twilio"
+      version = "0.19.0"
+    }
+    twilionew = {
+      source  = "twilio/twilio"
+      version = "0.18.8"
+    }
   }
 }
 

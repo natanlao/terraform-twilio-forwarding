@@ -1,8 +1,3 @@
-variable "area_code" {
-  type     = string
-  nullable = false
-}
-
 variable "forward_to" {
   type        = string
   description = "Phone number to forward SMS and voice to."
