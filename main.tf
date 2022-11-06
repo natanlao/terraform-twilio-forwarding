@@ -1,6 +1,3 @@
-# TODO: cite twilio examples
-# TODO: add tests
-
 terraform {
   required_providers {
     twilio = {
