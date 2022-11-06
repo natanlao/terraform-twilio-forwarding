@@ -67,13 +67,23 @@ resource "twilio_serverless_function" "sms" {
   service_sid   = twilio_serverless_service.forwarding.sid
   friendly_name = "smsForwarding"
 
+  # https://www.twilio.com/blog/sms-forwarding-and-responding-using-twilio-and-javascript
   content           = <<EOF
 exports.handler = function(context, event, callback) {
-  let twiml = new Twilio.twiml.MessagingResponse();
-  twiml.message(`$${event.From}: $${event.Body}`, {
-    to: context.DESTINATION
-  });
-  callback(null, twiml);
+    let twiml = new Twilio.twiml.MessagingResponse();
+    if (event.From === context.DESTINATION) {
+        const separatorPosition = event.Body.indexOf(':');
+        if (separatorPosition < 1) {
+            twiml.message('You need to specify a recipient number and a ":" before the message.');
+        } else {
+            const recipientNumber = event.Body.substr(0, separatorPosition).trim();
+            const messageBody = event.Body.substr(separatorPosition + 1).trim();
+            twiml.message({ to: recipientNumber }, messageBody);
+        }
+    } else {
+        twiml.message({ to: context.DESTINATION }, `$${event.From}: $${event.Body}`);
+    }
+    callback(null, twiml);
 };
 EOF
   content_type      = "application/javascript"
